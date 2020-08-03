@@ -51,7 +51,7 @@ GstCaps* gstCapsFromImage(const sensor_msgs::Image::ConstPtr& msg, int framerate
         {sensor_msgs::image_encodings::MONO16, "GRAY16_LE"},
     }};
 
-    if (msg->is_bigendian)
+    if (msg->is_bigendian != 0U)
     {
         ROS_ERROR("GST: big endian image format is not supported");
         return nullptr;

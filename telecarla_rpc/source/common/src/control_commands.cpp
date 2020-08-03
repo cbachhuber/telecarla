@@ -14,8 +14,8 @@ carla_msgs::CarlaEgoVehicleControl ControlCommands::getMessage() const noexcept
     carlaEgoVehicleControl.throttle = throttle;
     carlaEgoVehicleControl.brake = brake;
     carlaEgoVehicleControl.steer = steer;
-    carlaEgoVehicleControl.reverse = reverse;
-    carlaEgoVehicleControl.hand_brake = hand_brake;
+    carlaEgoVehicleControl.reverse = static_cast<unsigned char>(reverse);
+    carlaEgoVehicleControl.hand_brake = static_cast<unsigned char>(hand_brake);
 
     return carlaEgoVehicleControl;
 }
@@ -24,7 +24,7 @@ ControlCommands::ControlCommands(const carla_msgs::CarlaEgoVehicleControl& contr
     : throttle(controlMsg.throttle),
       brake(controlMsg.brake),
       steer(controlMsg.steer),
-      reverse(controlMsg.reverse),
-      hand_brake(controlMsg.hand_brake)
+      reverse(static_cast<bool>(controlMsg.reverse)),
+      hand_brake(static_cast<bool>(controlMsg.hand_brake))
 {
 }

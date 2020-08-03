@@ -13,7 +13,7 @@ GstFlowReturn RTSPClient::onNewSampleFromSink(GstAppSink* appSink, RTSPClient* d
     GstSample* sample = gst_app_sink_pull_sample(appSink);
     GstCaps* caps = gst_sample_get_caps(sample);
 
-    if (!caps)
+    if (caps == nullptr)
     {
         GST_ERROR("Could not get image info from filter caps");
         return GST_FLOW_ERROR;
@@ -22,7 +22,8 @@ GstFlowReturn RTSPClient::onNewSampleFromSink(GstAppSink* appSink, RTSPClient* d
     GstStructure* s = gst_caps_get_structure(caps, 0);
     int width = 0;
     int height = 0;
-    if (!(gst_structure_get_int(s, "width", &width) && gst_structure_get_int(s, "height", &height)))
+    if ((gst_structure_get_int(s, "width", static_cast<bool>(&width)) != 0) &&
+        (gst_structure_get_int(s, "height", &height) != 0))
     {
         GST_ERROR("Could not get image width and height from filter caps");
         return GST_FLOW_ERROR;
@@ -48,8 +49,7 @@ RTSPState RTSPClient::start(const std::string& serverHost, int serverPort, const
 {
     switch (state_)
     {
-        case RTSPState::stopped:
-        {
+        case RTSPState::stopped: {
             // rtspsrc default: protocols=tcp+udp-mcast+udp
             std::string cmd =
                 "rtspsrc location=rtsp://" + serverHost + ":" + std::to_string(serverPort) + "/" + serverMount +
@@ -61,7 +61,7 @@ RTSPState RTSPClient::start(const std::string& serverHost, int serverPort, const
             GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(pipeline_), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline-rtsp-client");
 
             receiverAppSink_ = GST_APP_SINK(gst_bin_get_by_name(GST_BIN(pipeline_), serverMount.c_str()));
-            gst_app_sink_set_emit_signals(receiverAppSink_, true);
+            gst_app_sink_set_emit_signals(receiverAppSink_, static_cast<gboolean>(true));
             g_signal_connect(receiverAppSink_, "new-sample", G_CALLBACK(onNewSampleFromSink), this);
 
             if (gst_element_set_state(pipeline_, GST_STATE_PLAYING) == GST_STATE_CHANGE_FAILURE)
@@ -76,8 +76,7 @@ RTSPState RTSPClient::start(const std::string& serverHost, int serverPort, const
             }
             break;
         }
-        case RTSPState::paused:
-        {
+        case RTSPState::paused: {
             resume();
             break;
         }

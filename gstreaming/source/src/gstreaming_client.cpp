@@ -12,7 +12,7 @@ GStreamingClient::GStreamingClient(ros::NodeHandle& nh,
                                    int argc,
                                    char* argv[])  // NOLINT(modernize-avoid-c-arrays)
     : gstLifecycle_(argc, argv),
-      loop_(g_main_loop_new(nullptr, false)),
+      loop_(g_main_loop_new(nullptr, static_cast<gboolean>(false))),
       threadGstreamer_(&GStreamingClient::thrGstreamer, this),
       rtspClient_(std::make_unique<rtsp::client::RTSPClient>(
           [this](auto&&... args) { callbackImage(std::forward<decltype(args)>(args)...); }))

@@ -16,7 +16,7 @@ GStreamingServer::GStreamingServer(ros::NodeHandle& nh,
       serverPort_(pnh.param("port", 8551)),
       mountName_(pnh.param("mount", std::string("mainstream"))),
       streamSource_(pnh.param("stream_source", std::string("appsrc"))),
-      loop_(g_main_loop_new(nullptr, false)),
+      loop_(g_main_loop_new(nullptr, static_cast<gboolean>(false))),
       threadGstreamer_(std::thread(&GStreamingServer::thrGstreamer, this)),
       rtspServer_(std::make_unique<RTSPServer>(mountName_))
 {
